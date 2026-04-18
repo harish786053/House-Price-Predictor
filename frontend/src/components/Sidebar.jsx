@@ -1,7 +1,9 @@
 import { NavLink } from "react-router-dom";
 import { Home, IndianRupee, BarChart2, Clock, Settings, Bookmark, CheckCircle2, Crown, LogOut } from "lucide-react";
 
-export default function Sidebar() {
+export default function Sidebar({ onLogout }) {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  
   const menuItems = [
     { name: "Dashboard", path: "/", icon: Home },
     { name: "Predict Price", path: "/predict", icon: IndianRupee },
@@ -63,14 +65,22 @@ export default function Sidebar() {
 
         {/* User Card */}
         <div className="flex items-center justify-between p-3 bg-cardBg rounded-xl border border-gray-800">
-          <div className="flex items-center gap-3">
-            <img src="https://ui-avatars.com/api/?name=Harish&background=random" className="w-8 h-8 rounded-full" alt="User" />
-            <div>
-              <p className="text-sm font-semibold">User</p>
-              <p className="text-xs text-gray-500">user@example.com</p>
+          <div className="flex items-center gap-3 overflow-hidden">
+            <img 
+              src={`https://ui-avatars.com/api/?name=${user.name || 'User'}&background=8b5cf6&color=fff`} 
+              className="w-8 h-8 rounded-full shrink-0" 
+              alt="User" 
+            />
+            <div className="overflow-hidden">
+              <p className="text-sm font-semibold truncate">{user.name || 'User'}</p>
+              <p className="text-xs text-gray-500 truncate">{user.email || 'user@example.com'}</p>
             </div>
           </div>
-          <button className="text-gray-500 hover:text-danger p-1">
+          <button 
+            onClick={onLogout}
+            className="text-gray-500 hover:text-red-500 p-2 transition-colors shrink-0"
+            title="Logout"
+          >
             <LogOut size={16} />
           </button>
         </div>

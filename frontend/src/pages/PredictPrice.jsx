@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { CloudLightning, Info } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { useData } from '../context/DataContext';
 
 export default function PredictPrice() {
+  const { addHistoryEntry } = useData();
   const location = useLocation();
   const [formData, setFormData] = useState({
     area: location.state?.formData?.area || '',
@@ -29,15 +31,34 @@ export default function PredictPrice() {
       // Trying to hit the backend
       const res = await axios.post(API_URL, formData);
       setResult(res.data);
+      
+      // Save to local history state
+      addHistoryEntry({
+        area: formData.area,
+        loc: formData.location,
+        price: (res.data.prediction / 100000).toFixed(2),
+        date: new Date().toISOString(),
+        time: "Just now"
+      });
     } catch (err) {
       console.error(err);
       // Fallback if backend is down locally since user didn't have Node installed
       setTimeout(() => {
         const mockedPrice = 10000 + (Number(formData.area) * 4000);
-        setResult({
+        const mockedResult = {
           prediction: mockedPrice,
           formated_prediction: `${(mockedPrice / 100000).toFixed(2)} Lakhs`,
           note: "Network error. Showing fallback calculation."
+        };
+        setResult(mockedResult);
+        
+        // Save fallback to local history state
+        addHistoryEntry({
+          area: formData.area,
+          loc: formData.location,
+          price: (mockedPrice / 100000).toFixed(2),
+          date: new Date().toISOString(),
+          time: "Just now"
         });
       }, 800);
     } finally {

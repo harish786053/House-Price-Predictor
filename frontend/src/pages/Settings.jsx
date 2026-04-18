@@ -2,6 +2,8 @@ import React from 'react';
 import { Moon, Bell, Shield, Key, User, Globe } from 'lucide-react';
 
 export default function Settings() {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
   return (
     <div className="p-8 h-full overflow-y-auto">
       <div className="mb-8">
@@ -21,11 +23,19 @@ export default function Settings() {
             <div className="p-5 space-y-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs text-gray-400">Full Name</label>
-                <input type="text" defaultValue="Harish User" className="bg-[#0f111a] border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:border-primary outline-none" />
+                <input 
+                  type="text" 
+                  defaultValue={user.name || "Harish User"} 
+                  className="bg-[#0f111a] border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:border-primary outline-none" 
+                />
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs text-gray-400">Email Address</label>
-                <input type="email" defaultValue="karthik@example.com" className="bg-[#0f111a] border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:border-primary outline-none" />
+                <input 
+                  type="email" 
+                  defaultValue={user.email || "user@example.com"} 
+                  className="bg-[#0f111a] border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:border-primary outline-none" 
+                />
               </div>
               <button className="bg-primary hover:bg-primary/90 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors">
                 Save Changes
