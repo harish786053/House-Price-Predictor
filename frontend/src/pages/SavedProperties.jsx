@@ -1,9 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { Heart, MapPin, IndianRupee } from 'lucide-react';
 
 export default function SavedProperties() {
   const { savedProperties, toggleSaveProperty } = useData();
+  const navigate = useNavigate();
+
+  const handleViewReport = (prop) => {
+    navigate('/analytics', { state: { property: prop } });
+  };
 
   return (
     <div className="p-8 h-full overflow-y-auto">
@@ -70,7 +76,10 @@ export default function SavedProperties() {
                   </div>
                 </div>
                 
-                <button className="w-full mt-4 bg-gray-800 hover:bg-primary text-white text-sm font-medium py-2.5 rounded-lg transition-colors">
+                <button 
+                  onClick={() => handleViewReport(prop)}
+                  className="w-full mt-4 bg-gray-800 hover:bg-primary text-white text-sm font-medium py-2.5 rounded-lg transition-colors"
+                >
                   View Full Report
                 </button>
               </div>

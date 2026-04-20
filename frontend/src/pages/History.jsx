@@ -1,9 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { Clock, Download, Filter, Search } from 'lucide-react';
 
 export default function History() {
   const { history } = useData();
+  const navigate = useNavigate();
+
+  const handleViewReport = (item) => {
+    navigate('/analytics', { state: { historyItem: item } });
+  };
 
   return (
     <div className="p-8 h-full overflow-y-auto">
@@ -70,7 +76,10 @@ export default function History() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <button className="text-primary hover:text-white transition flex items-center gap-1 text-xs">
+                      <button 
+                        onClick={() => handleViewReport(item)}
+                        className="text-primary hover:text-white transition flex items-center gap-1 text-xs"
+                      >
                         <Download size={14} /> Report
                       </button>
                     </td>

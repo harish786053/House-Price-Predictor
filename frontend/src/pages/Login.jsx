@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, User as UserIcon, ArrowRight, Github, Chrome, Facebook, Apple } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, User as UserIcon, ArrowRight, Github, Chrome, Facebook, Apple, UserPlus } from 'lucide-react';
 import axios from 'axios';
 import './Login.css';
 
 const Login = ({ setAuth }) => {
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: ''
   });
@@ -12,7 +14,7 @@ const Login = ({ setAuth }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { email, password } = formData;
+  const { name, email, password } = formData;
 
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -21,11 +23,11 @@ const Login = ({ setAuth }) => {
     setError('');
     setLoading(true);
 
+    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+    const backendUrl = `http://localhost:5000${endpoint}`;
+
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
-        email,
-        password
-      });
+      const res = await axios.post(backendUrl, isLogin ? { email, password } : { name, email, password });
 
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
@@ -33,18 +35,18 @@ const Login = ({ setAuth }) => {
     } catch (err) {
       console.error('Backend unreachable, using frontend fallback');
       
-      // FRONTEND FALLBACK: Allow anyone to login for the demo if server is down
+      // FRONTEND FALLBACK: Allow anyone to login/register for the demo
       if (email && password) {
         const mockUser = {
-          id: 'mock_123',
-          name: email.split('@')[0],
+          id: 'mock_' + Date.now(),
+          name: name || email.split('@')[0],
           email: email
         };
         localStorage.setItem('token', 'mock_token_for_demo');
         localStorage.setItem('user', JSON.stringify(mockUser));
         setAuth(true);
       } else {
-        setError(err.response?.data?.message || 'Invalid email or password');
+        setError(err.response?.data?.message || 'Something went wrong');
       }
     } finally {
       setLoading(false);
@@ -56,20 +58,37 @@ const Login = ({ setAuth }) => {
       <div className="harish-login-card">
         <div className="harish-login-header">
           <div className="harish-login-icon">
-            <UserIcon size={32} color="#fff" />
+            {isLogin ? <UserIcon size={32} color="#fff" /> : <UserPlus size={32} color="#fff" />}
           </div>
-          <h1 className="harish-login-title">Welcome Back</h1>
-          <p className="harish-login-subtitle">Login to your account to continue</p>
+          <h1 className="harish-login-title">{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
+          <p className="harish-login-subtitle">
+            {isLogin ? 'Login to your account to continue' : 'Sign up to start predicting property prices'}
+          </p>
         </div>
 
         {error && <div className="harish-error-msg">{error}</div>}
 
         <form className="harish-login-form" onSubmit={onSubmit}>
+          {!isLogin && (
+            <div className="harish-input-group">
+              <UserIcon className="harish-input-icon" size={18} />
+              <input
+                type="text"
+                placeholder="Full Name"
+                name="name"
+                className="harish-login-input"
+                value={name}
+                onChange={onChange}
+                required
+              />
+            </div>
+          )}
+
           <div className="harish-input-group">
             <Mail className="harish-input-icon" size={18} />
             <input
               type="email"
-              placeholder="Email or Username"
+              placeholder="Email Address"
               name="email"
               className="harish-login-input"
               value={email}
@@ -98,18 +117,20 @@ const Login = ({ setAuth }) => {
             </button>
           </div>
 
-          <div className="harish-form-options">
-            <label className="harish-checkbox">
-              <input type="checkbox" />
-              <span>Remember me</span>
-            </label>
-            <a href="#" className="harish-forgot-link">Forgot Password?</a>
-          </div>
+          {isLogin && (
+            <div className="harish-form-options">
+              <label className="harish-checkbox">
+                <input type="checkbox" />
+                <span>Remember me</span>
+              </label>
+              <a href="#" onClick={(e) => e.preventDefault()} className="harish-forgot-link">Forgot Password?</a>
+            </div>
+          )}
 
           <button type="submit" className="harish-login-btn" disabled={loading}>
-            {loading ? 'Logging in...' : (
+            {loading ? (isLogin ? 'Logging in...' : 'Registering...') : (
               <>
-                Login <ArrowRight size={18} />
+                {isLogin ? 'Login' : 'Sign Up'} <ArrowRight size={18} />
               </>
             )}
           </button>
@@ -130,8 +151,17 @@ const Login = ({ setAuth }) => {
         </div>
 
         <div className="harish-footer">
-          Don't have an account? 
-          <a href="#" className="harish-signup-link">Sign up</a>
+          {isLogin ? "Don't have an account?" : "Already have an account?"} 
+          <button 
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError('');
+            }} 
+            className="harish-signup-link bg-transparent border-none p-0 ml-1 cursor-pointer"
+            style={{ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' }}
+          >
+            {isLogin ? 'Sign up' : 'Login'}
+          </button>
         </div>
       </div>
     </div>
@@ -139,3 +169,4 @@ const Login = ({ setAuth }) => {
 };
 
 export default Login;
+

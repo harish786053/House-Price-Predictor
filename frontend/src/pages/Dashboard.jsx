@@ -125,12 +125,12 @@ export default function Dashboard() {
         <div className="bg-cardBg border border-gray-800 rounded-xl p-5">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold flex items-center gap-2">⏱️ Recent Predictions</h2>
-            <button className="text-primary text-xs hover:underline">View All</button>
+            <button onClick={() => navigate('/history')} className="text-primary text-xs hover:underline">View All</button>
           </div>
           <div className="space-y-4">
-            <RecentItem area="1500" loc="Chennai" price="75.42" time="2 hours ago" />
-            <RecentItem area="1200" loc="Bengaluru" price="62.10" time="1 day ago" />
-            <RecentItem area="1800" loc="Hyderabad" price="91.30" time="2 days ago" />
+            <RecentItem onClick={() => navigate('/analytics')} area="1500" loc="Chennai" price="75.42" time="2 hours ago" />
+            <RecentItem onClick={() => navigate('/analytics')} area="1200" loc="Bengaluru" price="62.10" time="1 day ago" />
+            <RecentItem onClick={() => navigate('/analytics')} area="1800" loc="Hyderabad" price="91.30" time="2 days ago" />
           </div>
         </div>
 
@@ -176,9 +176,9 @@ function Input({ label, type = "text", placeholder, options, value, onChange, na
   );
 }
 
-function RecentItem({ area, loc, price, time }) {
+function RecentItem({ area, loc, price, time, onClick }) {
   return (
-    <div className="flex justify-between items-center p-3 hover:bg-gray-800/30 rounded-lg transition cursor-pointer border border-transparent hover:border-gray-800">
+    <div onClick={onClick} className="flex justify-between items-center p-3 hover:bg-gray-800/30 rounded-lg transition cursor-pointer border border-transparent hover:border-gray-800">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-xl">
           🏢
